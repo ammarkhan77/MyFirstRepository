@@ -1,0 +1,161 @@
+CREATE TABLE students(
+    stdID int,
+    stdName varchar(50),
+    stdAge int,
+    stdCity varchar(50)
+)
+CREATE TABLE employee(
+    ID int,
+    name varchar(50),
+    email varchar(50),
+    salary int,
+    department varchar(50),
+    designation varchar(50),
+    city varchar(50)
+)
+/*ALTER TABLE employee DROP city;*/
+/* ALTER TABLE employee CHANGE name empName varchar(100),email empEmail varchar(100),salary empSalary INT,department empDepartment varchar(100),designation empDesignation varchar(100);  */  
+/*DROP TABLE students*/
+
+---------------------------------
+-----Constraint = Validations-----
+
+CREATE TABLE students (
+    stdID int PRIMARY KEY AUTO_INCREMENT ,
+    stdName varchar (100) NOT null ,
+    stdEmail varchar (100) UNIQUE ,
+    stdCity varchar (100) DEFAULT 'karachi' ,
+    stdGender ENUM('male','female') ,
+    stdAge int CHECK(stdAge>18)
+)
+--------------------------------------
+----- Insert Records -----
+INSERT INTO students (stdName,stdEmail,stdGender,stdAge) VALUES ('Ammar','ammar@gmail.com','male',21)
+INSERT INTO students (stdName,stdEmail,stdCity,stdGender,stdAge) VALUES ('Tauqeer','Tauqeer@gmail.com','Karachi','male',22),('Ehsan','Ehsan@gmail.com','Karachi','male',26)
+-------------------------------------------
+------ Comparison & Logical OPERATOR ------
+---------------- Select -------------------
+-- SELECT * FROM `students` 
+-- SELECT stdID , stdName FROM students
+-- SELECT * from students WHERE stdID = 1
+-- SELECT stdGender , stdAge FROM students WHERE stdAge >= 30
+-- SELECT * FROM students WHERE stdName = 'Ammar'
+-- SELECT * FROM students WHERE stdAge > 25
+-- SELECT * FROM students WHERE stdAge >= 25
+-- SELECT * FROM students WHERE stdAge < 25
+-- SELECT * FROM students WHERE stdAge <= 25
+-- SELECT * FROM students WHERE stdAge != 25
+-- SELECT * FROM students WHERE stdAge = 32 AND stdGender = 'male'
+-- SELECT * FROM students WHERE stdID = 1 or stdID = 3 or stdID = 5
+-- SELECT * FROM students WHERE stdID = 1 AND stdID = 3 AND stdID = 5 ye operator result nahi dega Q k And Operator ek value laata hai
+-- SELECT * FROM students WHERE not stdName = 'ammar';
+-- SELECT stdCity FROM students GROUP BY (stdCity) 
+-- SELECT * FROM students WHERE stdAge >= 20 AND sd Age <=23;
+-- SELECT * FROM students WHERE stdId = 1 OR stdId = 3 OR stdId = 12;
+-- SELECT * FROM students WHERE stdId IN (1,3,5)
+-- SELECT * FROM students WHERE stdAge BETWEEN 20 AND 23
+-- SELECT * FROM students WHERE stdId != 1 OR stdId != 3 OR stdId != 5
+-- SELECT * FROM students WHERE stdId != 1 AND stdId != 3 AND stdId != 5
+-- SELECT * FROM students WHERE stdId NOT IN(1,3,5)
+-- SELECT stdCity FROM students GROUP BY(stdCity)
+-- SELECT COUNT(stdId) AS 'Total Students'
+-- SELECT MIN(stdAge) AS 'Minimun Age' FROM students;
+-- SELECT MAX(stdAge) AS 'Maximun Age' FROM students;
+-- SELECT SUM(stdAge) AS 'Sum Of Age' FROM students;
+-- SELECT AVG(stdAge) AS 'Avg Age' FROM students;
+-- SELECT * FROM students WHERE stdAge = (SELECT max(stdAge)FROM students)
+
+---------------- Update -------------------
+-- UPDATE students SET stdEmail = 'Ammarkhan@gmail.com' WHERE stdName = 'Ammar' 
+-- UPDATE students SET stdGender = 'female' WHERE stdName = 'Abbas';
+-- UPDATE students SET stdAge = stdAge + 2
+-- UPDATE students SET stdAge = stdAge - 2
+-- UPDATE students SET stdName = 'Tauqeer Tanveer' , stdEmail = 'Tauqeer@gmail.com' WHERE stdID = 5
+-- UPDATE students SET stdCity = 'Karachi' WHERE stdName = 'Fatima' AND stdAge = 29 
+-- UPDATE students SET stdAge = stdAge + 2 WHERE stdId NOT IN(1,3,5)
+
+---------------- Group By -------------------
+SELECT empGender FROM employees GROUP BY (empGender)
+
+
+------------- To Add New Column -----------
+-- ALTER TABLE employees ADD empDepartment varchar(200),
+
+------------- To delete Column -----------
+-- ALTER TABLE students DROP COLUMN f_sub;
+
+------------ Multiple Employee Data ----------
+INSERT INTO employees (empName,empEmail,empCity,empGender,empAge,empDepartment,empSalary) VALUES 
+('Mubeen','Mubeen@gmail.com','Lahore','male',36,'Faculty',40000), 
+('Rimsha','Rimsha@gmail.com','Karachi','female',19,'Faculty',20000),
+('Muneeb','Muneeb@gmail.com','Karachi','male',25,'Faculty',25000),
+('Saba','Saba@gmail.com','Karachi','female',30,'Student Affiars',32000),
+('Uroosh','Uroosh@gmail.com','Karachi','female',28,'Faculty',42000),
+('Uzair','Uzair@gmail.com','Karachi','male',30,'Managment',60000),
+('Abeeha','Abeeha@gmail.com','Karachi','female',31,'Managment',55000)
+
+---------------- Having Claus -------------------
+SELECT dept, SUM(salary) FROM students GROUP BY(dept) HAVING SUM(salary)>100000
+
+----------------------------------------------------
+---------------- Foreign Key Add -------------------
+-- ALTER TABLE students ADD f_id int , ADD CONSTRAINT FOREIGN KEY(f_id) REFERENCES faculties(id)
+-- UPDATE students SET f_id = 1 WHERE stdID = 1
+
+18/12/2023
+---------------- Joins ---------------
+SELECT * FROM students 
+INNER JOIN 
+faculties 
+ON
+students.f_id = faculties.id;
+
+-- SELECT students.stdName, students.stdCity, faculties.name AS 'faculties name' (AS is liye lgaya Q k faculties may colmn name sirf name tha)
+
+SELECT * FROM students 
+LEFT JOIN 
+faculties 
+ON
+students.f_id = faculties.id;
+------------ JOINS FOR 3 TABLES --------------
+SELECT products.name, products.des, products.price, brands.name AS 'brand name', category.name AS 'category name'
+from products
+INNER JOIN
+brands 
+ON
+products.brands_id = brands.id
+INNER JOIN
+category
+ON
+products.category_id = category.id
+
+-------------------- VIEWS ------------------------
+CREATE VIEW female_faculties AS
+SELECT * FROM employees WHERE empGender = 'female' AND empDepartment = 'faculty'
+
+------------ Stored procedure ----------------------
+DELIMITER //
+CREATE PROCEDURE salaryInc(e_id int, e_salary int)
+BEGIN
+UPDATE employees SET empSalary = empSalary  + e_salary WHERE empID = e_id;
+END
+
+-------------------- TRIGGERS ---------------------
+DELIMITER //
+CREATE TRIGGER salaryCalculator
+BEFORE UPDATE on employees
+FOR EACH ROW
+BEGIN
+SET NEW.y_pay = NEW.h_pay * 2080;
+END
+--------------------  --------------------
+DELIMITER //
+CREATE TRIGGER productCode
+BEFORE UPDATE on employees
+FOR EACH ROW
+BEGIN
+SET NEW.p_code = concat('product code',uudi());
+END
+
+--------------------- LIKE Operator ---------------------
+SELECT * FROM employees WHERE empName LIKE '%a_'
